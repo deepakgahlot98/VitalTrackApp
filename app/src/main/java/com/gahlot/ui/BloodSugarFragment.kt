@@ -37,6 +37,7 @@ class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
         viewModel = (activity as MainActivity).viewModel
         chart = view.findViewById(R.id.barChat_bloodSugar)
         viewModel.getVitalData()
+        setupBarChart()
 
         viewModel.vitalInfo.observe(viewLifecycleOwner, Observer {
             when (it) {
@@ -48,15 +49,17 @@ class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
                                 list = addGraphData(item)
                             }
                         }
-                        Log.i(TAG, "onViewCreated: " + list.get(1).get(1).split("/")[0].toFloat())
+
                         val bloodsugar = list.indices.map { i ->
                             BarEntry(
+                                //TODO need to improve this naive implementation
                                 list.get(i).get(1).split("/").get(0).toFloat(),
                                 list.get(i).get(0).toFloat()
                             )
                         }
-                        val barDataSet = BarDataSet(bloodsugar, "bLOOD sUGAR").apply {
+                        val barDataSet = BarDataSet(bloodsugar, "Blood Sugar").apply {
                             valueTextColor = Color.WHITE
+                            valueTextSize = 12f
                             color = ContextCompat.getColor(requireContext(), R.color.white)
                         }
                         chart.data = BarData(barDataSet)
@@ -64,10 +67,20 @@ class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
 
                     }
                 }
+                is Resource.Error -> {
+                    hideProgressBar()
+                    it.message?.let {
+                        Log.e(TAG, "Error Occured: $it")
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressBar()
+                }
             }
         })
     }
 
+    //TODO need to use enum or some better approach to solve this
     private fun addGraphData(vital : Vital) : MutableList<List<String>> {
         for ((index, item) in vital.dates.withIndex()) {
             var subList  = mutableListOf<String>()
@@ -90,15 +103,19 @@ class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
         chart.axisLeft.apply {
             axisLineColor = Color.WHITE
             textColor = Color.WHITE
+            textSize = 15f
             setDrawGridLines(false)
         }
         chart.axisRight.apply {
             axisLineColor = Color.WHITE
             textColor = Color.WHITE
+            textSize = 15f
             setDrawGridLines(false)
         }
         chart.apply {
             description.text = "Avg Blood Sugar"
+            description.textSize = 14f
+            description.textColor = Color.RED
             legend.isEnabled = false
         }
     }
