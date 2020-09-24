@@ -7,6 +7,6 @@ import javax.xml.transform.Source
 interface VitalApi {
 
     @GET("v3/cbeaa5c4-9fe3-4a60-abbf-ca95b70a48df")
-    suspend fun getVitals() : Response<Source>
+    suspend fun getVitals() : Response<com.gahlot.models.Source>
 
 }

@@ -13,10 +13,10 @@ import javax.xml.transform.Source
 
 class VitalViewModel(app: Application,val vitalRepository: VitalRepository) : AndroidViewModel(app) {
 
-    var vitalInfo : MutableLiveData<Resource<Source>> = MutableLiveData()
-    var vitalInfoResponse: Source? = null
+    var vitalInfo : MutableLiveData<Resource<com.gahlot.models.Source>> = MutableLiveData()
+    var vitalInfoResponse: com.gahlot.models.Source? = null
 
-    private fun handleVitalResponse(response: Response<Source>) : Resource<Source> {
+    private fun handleVitalResponse(response: Response<com.gahlot.models.Source>) : Resource<com.gahlot.models.Source> {
         if (response.isSuccessful) {
             response.body()?.let {
                 if (vitalInfoResponse == null) {
