@@ -1,27 +1,25 @@
 package com.gahlot.ui
 
+import android.R.attr.entries
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.gahlot.models.Vital
+import com.gahlot.utils.Helper
 import com.gahlot.viewmodel.VitalViewModel
 import com.gahlot.vitaltrackingapp.MainActivity
 import com.gahlot.vitaltrackingapp.R
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_blood_sugar.*
+
 
 class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
 
@@ -50,13 +48,14 @@ class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
                             }
                         }
 
-                        val bloodsugar = list.indices.map { i ->
+                        var bloodsugar = list.indices.map { i ->
                             BarEntry(
                                 //TODO need to improve this naive implementation
-                                list.get(i).get(1).split("/").get(0).toFloat(),
-                                list.get(i).get(0).toFloat()
+                                Helper.convertDateToFloat(list[i][1]),
+                                list[i][0].toFloat()
                             )
                         }
+
                         val barDataSet = BarDataSet(bloodsugar, "Blood Sugar").apply {
                             valueTextColor = Color.WHITE
                             valueTextSize = 12f
@@ -80,12 +79,14 @@ class BloodSugarFragment : Fragment(R.layout.fragment_blood_sugar) {
         })
     }
 
+
+
     //TODO need to use enum or some better approach to solve this
-    private fun addGraphData(vital : Vital) : MutableList<List<String>> {
-        for ((index, item) in vital.dates.withIndex()) {
+    private fun addGraphData(vital: Vital) : MutableList<List<String>> {
+        for ((index) in vital.dates.withIndex()) {
             var subList  = mutableListOf<String>()
-            subList.add(vital.values.get(index))
-            subList.add(vital.dates.get(index))
+            subList.add(vital.values[index])
+            subList.add(vital.dates[index])
             map.add(subList)
         }
         return map
